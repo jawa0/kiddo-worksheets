@@ -15,20 +15,25 @@ PTS_PER_IN = 72.0
 FONT_HEIGHT_IN = 0.5
 
 
-def generate_subtraction_digits():
-  are_different = False
-  while not are_different:
-    x = random.randint(1, 9)
-    y = random.randint(1, 9)
-    are_different = (x != y)
-  
-  return max(x, y), min(x, y)
-  
-
 def inches(inches):
     """Return the number of points equal to the given number of inches."""
     return inches * PTS_PER_IN
 
+
+def generate_single_digit_subtraction(can_be_equal=False):
+  """Generate a pair of single digits (a, b) representing the subtraction a - b.
+  If can_be_equal is True, then a can be equal to b. Otherwise, not 
+  (the default is False). The generated a will always be >= b so that the result
+  of the subtraction a-b is non-negative."""
+  
+  good_pair = False
+  while not good_pair:
+    x = random.randint(1, 9)
+    y = random.randint(1, 9)
+    good_pair = can_be_equal or (x != y)
+  
+  return max(x, y), min(x, y)
+  
 
 if __name__ == '__main__':
   surface = cairo.PDFSurface(OUTPUT_FILE_NAME, inches(PAGE_WIDTH_IN),
@@ -37,7 +42,7 @@ if __name__ == '__main__':
   
   digit_pairs = set([])
   while len(digit_pairs) < 20:
-    digit_pairs.add(generate_subtraction_digits())
+    digit_pairs.add(generate_single_digit_subtraction())
   
   for d in range(10):
     print(cr.text_extents(str(d)))
